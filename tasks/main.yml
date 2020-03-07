@@ -168,3 +168,10 @@
     when: container_pod_yaml is defined
 
   when: container_state == "absent"
+
+- include_vars:
+    file: "../vault/secrets.yml"
+    name: vault
+
+- name: Update container DNS
+  import_tasks: 'update_pod_dns.yml'
