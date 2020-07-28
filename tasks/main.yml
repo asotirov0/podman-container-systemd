@@ -23,6 +23,7 @@
 
   - name: running single container, ensure we have up to date container image
     command: "podman pull {{ container_image }}"
+    ignore_errors: yes
     when: container_image is defined
 
   - name: running single container, get image Id if it exists
@@ -168,10 +169,6 @@
     when: container_pod_yaml is defined
 
   when: container_state == "absent"
-
-- include_vars:
-    file: "../vault/secrets.yml"
-    name: vault
 
 - name: Update container DNS
   import_tasks: 'update_pod_dns.yml'

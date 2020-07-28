@@ -1,4 +1,7 @@
 ---
+- include_vars:
+    file: "../vault/secrets.yml"
+    name: vault
 
 - name: Get container ip
   shell:
@@ -8,6 +11,7 @@
   register: container_ip
 
 
+#Add the main DNS record
 - name: "Add or modify POD {{container_name}} A to {{container_ip.stdout}}"
   nsupdate:
     key_algorithm: "hmac-sha512"
@@ -15,7 +19,7 @@
     key_secret: "{{vault.homedns_key_secret}}"
     server: "{{homedns_server}}"
     zone: "{{my_domain}}"
-    record: "{{container_name}}.pod"
+    record: "{{container_name}}"
     value: "{{container_ip.stdout}}"
     ttl: 300
     type: "A"
@@ -30,11 +34,13 @@
     server: "{{homedns_server}}"
     record: "{{container_ip.stdout | ipaddr('revdns')}}"
     type: "PTR"
-    value: "{{ansible_fqdn}}.{{my_domain}}."
+    value: "{{container_name}}.{{my_domain}}."
     ttl: 3600
+    zone: 10.in-addr.arpa
     state: present
   when: container_ip is defined and container_ip.rc == 0
 
+#Make a CNAME in the pod subdomain
 - name: "Add or modify {{container_name}} A to {{ansible_default_ipv4.address}}"
   nsupdate:
     key_algorithm: "hmac-sha512"
@@ -42,7 +48,7 @@
     key_secret: "{{vault.homedns_key_secret}}"
     server: "{{homedns_server}}"
     zone: "{{my_domain}}"
-    record: "{{container_name}}"
-    value: "{{ansible_default_ipv4.address}}"
+    record: "{{container_name}}.pod"
+    value: "{{container_name}}.{{my_domain}}."
     ttl: 3600
-    type: "A"
+    type: "CNAME"
