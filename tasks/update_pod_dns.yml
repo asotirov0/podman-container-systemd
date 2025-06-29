@@ -5,7 +5,7 @@
 
 - name: Get container ip
   shell:
-    cmd: "podman inspect -f {% raw %}'{{.NetworkSettings.IPAddress}}'{% endraw %} {{container_name}}"
+    cmd: "podman inspect -f {% raw %}'{{.NetworkSettings.Networks.vdmz.IPAddress}}'{% endraw %} {{container_name}}"
   args:
     executable: /bin/bash
   register: container_ip
