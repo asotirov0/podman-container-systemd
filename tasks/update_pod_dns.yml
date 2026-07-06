@@ -1,8 +1,4 @@
 ---
-- include_vars:
-    file: "../vault/secrets.yml"
-    name: vault
-
 - name: Get container ip
   shell:
     cmd: "podman inspect -f {% raw %}'{{.NetworkSettings.Networks.vdmz.IPAddress}}'{% endraw %} {{container_name}}"
