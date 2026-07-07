@@ -10,9 +10,9 @@
 #Add the main DNS record
 - name: "Add or modify POD {{container_name}} A to {{container_ip.stdout}}"
   nsupdate:
-    key_algorithm: "hmac-sha512"
-    key_name: "{{vault.homedns_key_name}}"
-    key_secret: "{{vault.homedns_key_secret}}"
+    key_algorithm: "{{ homedns_key_algorithm }}"
+    key_name: "{{homedns_key_name}}"
+    key_secret: "{{homedns_key_secret}}"
     server: "{{homedns_server}}"
     zone: "{{my_domain}}"
     record: "{{container_name}}"
@@ -24,7 +24,7 @@
 
 - name: "Add or modify {{ container_ip.stdout | ipaddr('revdns') }} PTR to {{container_name}}.{{my_domain}}"
   nsupdate:
-    key_algorithm: "hmac-sha512"
+    key_algorithm: "{{ homedns_key_algorithm }}"
     key_name: "{{homedns_key_name}}"
     key_secret: "{{homedns_key_secret}}"
     server: "{{homedns_server}}"
@@ -39,9 +39,9 @@
 #Make a CNAME in the pod subdomain
 - name: "Add or modify {{container_name}} A to {{ansible_default_ipv4.address}}"
   nsupdate:
-    key_algorithm: "hmac-sha512"
-    key_name: "{{vault.homedns_key_name}}"
-    key_secret: "{{vault.homedns_key_secret}}"
+    key_algorithm: "{{ homedns_key_algorithm }}"
+    key_name: "{{homedns_key_name}}"
+    key_secret: "{{homedns_key_secret}}"
     server: "{{homedns_server}}"
     zone: "{{my_domain}}"
     record: "{{container_name}}.pod"
